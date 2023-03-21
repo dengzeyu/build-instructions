@@ -1,0 +1,18 @@
+#!/bin/bash
+#PBS -l select=1:ncpus=32:mpiprocs=32:mem=48G
+#PBS -l walltime=0:30:0
+
+export PBS_O_WORKDIR=$(readlink -f $PBS_O_WORKDIR)
+export OMP_NUM_THREADS=1
+
+module swap craype-x86-rome craype-x86-milan
+module swap PrgEnv-cray PrgEnv-gnu
+module load cray-libsci/21.08.1.2
+module load cray-fftw/3.3.8.13
+module load cray-hdf5-parallel/1.12.1.1
+module swap craype-network-ofi craype-network-ucx
+
+
+cd ${PBS_O_WORKDIR}
+make veryclean
+make DEPS=1 -j 32 all > compile.log
